@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  ContentScreen.swift
 //  Pinch
 //
 //  Created by Kamil Chlebuś on 19/10/2023.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct ContentScreen: View {
     @State private var isAnimating: Bool = false
     @State private var imageScale: CGFloat = 1
     @State private var imageOffset: CGSize = .zero
@@ -65,6 +65,6 @@ struct ContentView: View {
 
 struct ContentViewPreview: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentScreen()
     }
 }
