@@ -22,6 +22,8 @@ struct ContentScreen: View {
     var body: some View {
         NavigationStack {
             ZStack {
+                Color.clear
+
                 Image("magazine-front-cover")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -33,7 +35,9 @@ struct ContentScreen: View {
                     .padding()
                     .onTapGesture(count: 2) {
                         if imageScale == 1 {
-                            imageScale = 5
+                            withAnimation(.spring) {
+                                imageScale = 5
+                            }
                         } else {
                             resetImageState()
                         }
@@ -42,6 +46,7 @@ struct ContentScreen: View {
                         DragGesture()
                             .onChanged { value in
                                 withAnimation(.linear(duration: 1)) {
+//
                                     imageOffset = value.translation
                                 }
                             }
@@ -53,9 +58,13 @@ struct ContentScreen: View {
                     )
             }
             .animation(.linear(duration: 1), value: isAnimating)
-            .animation(.spring, value: imageScale)
             .navigationTitle("Pinch & Zoom")
             .navigationBarTitleDisplayMode(.inline)
+            .overlay(alignment: .top) {
+                InfoPanelView(scale: imageScale, offset: imageOffset)
+                    .padding(.horizontal)
+                    .padding(.top, 30)
+            }
         }
         .onAppear {
             isAnimating = true
