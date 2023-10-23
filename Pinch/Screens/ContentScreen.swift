@@ -12,6 +12,8 @@ struct ContentScreen: View {
     @State private var imageScale: CGFloat = 1
     @State private var imageOffset: CGSize = .zero
 
+    private let maxImageScale: CGFloat = 5
+
     private func resetImageState() {
         withAnimation(.spring) {
             imageScale = 1
@@ -36,7 +38,7 @@ struct ContentScreen: View {
                     .onTapGesture(count: 2) {
                         if imageScale == 1 {
                             withAnimation(.spring) {
-                                imageScale = 5
+                                imageScale = maxImageScale
                             }
                         } else {
                             resetImageState()
@@ -46,7 +48,6 @@ struct ContentScreen: View {
                         DragGesture()
                             .onChanged { value in
                                 withAnimation(.linear(duration: 1)) {
-//
                                     imageOffset = value.translation
                                 }
                             }
@@ -65,6 +66,41 @@ struct ContentScreen: View {
                     .padding(.horizontal)
                     .padding(.top, 30)
             }
+            .overlay(alignment: .bottom) {
+                Group {
+                    HStack {
+                        Button("", systemImage: "minus.magnifyingglass") {
+                            withAnimation(.spring) {
+                                if imageScale > 1 {
+                                    imageScale -= 1
+                                    if imageScale < 1 {
+                                        resetImageState()
+                                    }
+                                }
+                            }
+                        }
+                        Button("", systemImage: "arrow.up.left.and.down.right.magnifyingglass") {
+                            resetImageState()
+                        }
+                        Button("", systemImage: "plus.magnifyingglass") {
+                            withAnimation(.spring) {
+                                if imageScale < maxImageScale {
+                                    imageScale += 1
+                                    if imageScale > maxImageScale {
+                                        resetImageState()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .font(.system(size: 36))
+                    .padding(EdgeInsets(top: 12, leading: 20, bottom: 12, trailing: 20))
+                    .background(.ultraThinMaterial)
+                    .clipShape(.rect(cornerRadius: 12))
+                    .opacity(isAnimating ? 1 : 0)
+                }
+                .padding(.bottom, 30)
+            }
         }
         .onAppear {
             isAnimating = true
@@ -75,5 +111,6 @@ struct ContentScreen: View {
 struct ContentViewPreview: PreviewProvider {
     static var previews: some View {
         ContentScreen()
+            .preferredColorScheme(.dark)
     }
 }
