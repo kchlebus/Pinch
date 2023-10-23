@@ -14,13 +14,6 @@ struct ContentScreen: View {
 
     private let maxImageScale: CGFloat = 5
 
-    private func resetImageState() {
-        withAnimation(.spring) {
-            imageScale = 1
-            imageOffset = .zero
-        }
-    }
-
     var body: some View {
         NavigationStack {
             ZStack {
@@ -44,19 +37,8 @@ struct ContentScreen: View {
                             resetImageState()
                         }
                     }
-                    .gesture(
-                        DragGesture()
-                            .onChanged { value in
-                                withAnimation(.linear(duration: 1)) {
-                                    imageOffset = value.translation
-                                }
-                            }
-                            .onEnded { _ in
-                                if imageScale <= 1 {
-                                    resetImageState()
-                                }
-                            }
-                    )
+                    .gesture(imageDragGesture)
+                    .gesture(imageMagnificationGesture)
             }
             .animation(.linear(duration: 1), value: isAnimating)
             .navigationTitle("Pinch & Zoom")
@@ -77,6 +59,49 @@ struct ContentScreen: View {
         }
         .onAppear {
             isAnimating = true
+        }
+    }
+}
+
+private extension ContentScreen {
+    var imageDragGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                withAnimation(.linear(duration: 1)) {
+                    imageOffset = value.translation
+                }
+            }
+            .onEnded { _ in
+                if imageScale <= 1 {
+                    resetImageState()
+                }
+            }
+    }
+
+    var imageMagnificationGesture: some Gesture {
+        MagnificationGesture()
+            .onChanged { value in
+                withAnimation(.linear(duration: 1)) {
+                    if imageScale >= 1 && imageScale <= maxImageScale {
+                        imageScale = value
+                    } else if imageScale > maxImageScale {
+                        imageScale = maxImageScale
+                    }
+                }
+            }
+            .onEnded { _ in
+                if imageScale > maxImageScale {
+                    imageScale = maxImageScale
+                } else if imageScale <= 1 {
+                    resetImageState()
+                }
+            }
+    }
+
+    func resetImageState() {
+        withAnimation(.spring) {
+            imageScale = 1
+            imageOffset = .zero
         }
     }
 }
