@@ -12,15 +12,17 @@ struct ContentScreen: View {
     @State private var imageScale: CGFloat = 1
     @State private var imageOffset: CGSize = .zero
     @State private var isDrawerOpen: Bool = false
+    @State private var pageIndex: Int = 1
 
     private let maxImageScale: CGFloat = 5
+    let pages: [Page] = pagesData
 
     var body: some View {
         NavigationStack {
             ZStack {
                 Color.clear
 
-                Image("magazine-front-cover")
+                Image(currentPageImageName)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .clipShape(.rect(cornerRadius: 10))
@@ -58,7 +60,12 @@ struct ContentScreen: View {
                 )
             }
             .overlay(alignment: .topTrailing) {
-                ThumbnailDrawerView(isDrawerOpen: $isDrawerOpen, isAnimating: $isAnimating)
+                ThumbnailDrawerView(
+                    isDrawerOpen: $isDrawerOpen,
+                    isAnimating: $isAnimating,
+                    pageIndex: $pageIndex,
+                    pages: pages
+                )
             }
         }
         .onAppear {
@@ -68,6 +75,10 @@ struct ContentScreen: View {
 }
 
 private extension ContentScreen {
+    var currentPageImageName: String {
+        pages[pageIndex - 1].imageName
+    }
+
     var imageDragGesture: some Gesture {
         DragGesture()
             .onChanged { value in
