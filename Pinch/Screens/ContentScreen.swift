@@ -11,6 +11,7 @@ struct ContentScreen: View {
     @State private var isAnimating: Bool = false
     @State private var imageScale: CGFloat = 1
     @State private var imageOffset: CGSize = .zero
+    @State private var isDrawerOpen: Bool = false
 
     private let maxImageScale: CGFloat = 5
 
@@ -55,6 +56,9 @@ struct ContentScreen: View {
                     maxImageScale: maxImageScale,
                     resetImageState: resetImageState
                 )
+            }
+            .overlay(alignment: .topTrailing) {
+                ThumbnailDrawerView(isDrawerOpen: $isDrawerOpen, isAnimating: $isAnimating)
             }
         }
         .onAppear {
